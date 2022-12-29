@@ -1,4 +1,6 @@
 # Microservices and Distributed Systems
+## Building and Deploying Microservices from scratch
+
 
 ## Software Architecture Description
 
@@ -23,11 +25,8 @@
     - mvn archetype:generate -DgroupId=com.syscomz -DartifactId=syscomzservices -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false | Maven Creating Archetypes
   - Second delete src folder on the parent module
   - Third make pom.xml configuration
-  - 
 
 ## Description
 - Maven Multi-Module Project
 > A multi-module project is built from an aggregator POM that manages a group of submodules. In most cases, the aggregator is located in the project's root directory and must have packaging of type pom.
 The submodules are regular Maven projects, and they can be built separately or through the aggregator POM. The significant advantage of using this approach is that we may reduce duplication.
-
-- adsf
