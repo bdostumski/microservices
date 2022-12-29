@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.syscomz</groupId>
+  <artifactId>syscomzservices</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>syscomzservices</name>
+  <url>https://www.syscomz.com</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>18</maven.compiler.source> <!-- I am using openjdk-18 -->
+    <maven.compiler.target>18</maven.compiler.target> <!-- I am using openjdk-18 -->
+    <spring.boot.maven.plugin.version>2.7.6</spring.boot.maven.plugin.version>
+    <spring.boot.dependencies.version>2.7.6</spring.boot.dependencies.version>
+  </properties>
+
+  <!-- All submodules can pick the dependency that they want -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.dependencies.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- All the submodules will have these dependencies by default, without explicitly importing them into their pom.xml file -->
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- Again in this pluginManagement all submodules can pick the dependency that they want -->
+    <pluginManagement>
+      <plugins>
+        <!-- This plugin build the artifacts -->
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring.boot.maven.plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
