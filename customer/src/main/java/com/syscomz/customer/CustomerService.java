@@ -18,7 +18,10 @@ public record CustomerService(CustomerRepository customerRepository, RestTemplat
 
         // TODO: 1/14/23 check if fraudster
         FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
-                "http://localhost:8081/api/v1/fraud-check/{customerId}",
+                // "http://localhost:8081/api/v1/fraud-check/{customerId}", // this is default configuration without Eureka Server
+                // With Eureka Server we can remove localhost and the port and replace it wit the name of the microservice
+                // it can be seen into http://localhost:8761/ port is given by me into application.yml file
+                "http://FRAUD/api/v1/fraud-check/{customerId}",
                 FraudCheckResponse.class,
                 customer.getId()
         );

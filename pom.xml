@@ -16,14 +16,16 @@
     <modules>
         <module>customer</module>
         <module>fraud</module>
+        <module>eureka-server</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>18</maven.compiler.source> <!-- I am using openjdk-18 -->
         <maven.compiler.target>18</maven.compiler.target> <!-- I am using openjdk-18 -->
-        <spring.boot.maven.plugin.version>2.7.6</spring.boot.maven.plugin.version>
-        <spring.boot.dependencies.version>2.7.6</spring.boot.dependencies.version>
+        <spring.boot.maven.plugin.version>2.5.7</spring.boot.maven.plugin.version>
+        <spring.boot.dependencies.version>2.5.7</spring.boot.dependencies.version>
+        <spring.cloud-version>2020.0.3</spring.cloud-version>
     </properties>
 
     <!-- All submodules can pick the dependency that they want -->
@@ -35,6 +37,15 @@
                 <version>${spring.boot.dependencies.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+
+            <!-- Spring Cloud Dependency provides tools for developers to quickly build some of the common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus, one-time tokens, global locks, leadership election, distributed sessions, cluster state) -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

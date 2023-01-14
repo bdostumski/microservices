@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: eureka-server
+
+server:
+  port: 8761
+
+eureka:
+  # Because this is server configuration we should disable fetch-registry, and register-with-eureka
+  # fetch-registry  controls whether or not this client is going to try to connect to the Eureka server(s) in order to download the information on other services' endpoint.
+  # register-with-eureka this configuration is used to prevent Eureka server from registering itself in the server upon startup.
+  client:
+    fetch-registry: false
+    register-with-eureka: false

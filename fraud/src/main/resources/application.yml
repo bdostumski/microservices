@@ -10,9 +10,18 @@ spring:
     username: syscomz
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+      # ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+
+# Eureka Client configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true # it is true by default
+    register-with-eureka: true # it is true by default
