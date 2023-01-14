@@ -1,0 +1,18 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: fraud
+  datasource:
+    password: password
+    # If this microservice, was using a different database this line must be changed
+    url: jdbc:postgresql://localhost:5555/fraud
+    username: syscomz
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
