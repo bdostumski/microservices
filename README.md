@@ -12,7 +12,8 @@
 - [Maven](https://maven.apache.org/guides/mini/guide-creating-archetypes.html) | Guide to Creating Archetypes
 - [Spring Cloud](https://spring.io/projects/spring-cloud) | Spring Cloud Documentation, bring all microservices together
 - [Spring Boot Banner](https://devops.datenkollektiv.de/banner.txt/index.html) | Create Own Spring Boot Banner
-- 
+- [Spring Cloud Netflix](https://spring.io/projects/spring-cloud-netflix) | Service Discovery (Eureka)
+- [Open Feign](https://spring.io/projects/spring-cloud-openfeign) | Open Feign Documentation
 
 
 ## Cheat Sheet
@@ -46,6 +47,12 @@ The submodules are regular Maven projects, and they can be built separately or t
   - This communication can be achieved via multiple ways for example: Rest Template, Service Discovery, and Open Feign **which is mostly used**
   - For Rest Template implementation check CustomerService, and CustomerConfig
 
+- Rest Template
+  - Create requests from one microservice to another 
+  - The request with rest template looks like this http://localhost:8081/api/v1/fraud-check/{customerId}
+  - The problem is that we must specify the domain name and the port
+  - And when we are talking about scalability the port must be different for each new instance of the microservice. This is a problem because we can not hard code the data into our application, the data should be dynamically.
+
 - Service Discovery with Eureka
   - Create new module for Eureka Server (add pom.xml dependencies)
   - We have running three microservices \[Customer:8080 -> send request via HTTP:8081, HTTP:8085 to -> Fraud:8081, and Fraud:8085\]. In this example our Customer microservice should send request via HTTP to two Fraud microservices on different port. To be done this the Customer microservice should know for all the existing ports for Fraud microservice. This can be problem for example if Fraud scale to then instances, then the Customer microservice should know about all the ports of the Fraud microservice. Here it comes the Service Registry to solve this problem. When we are using Kubernetes we won't need the Eureka Server.
@@ -63,3 +70,9 @@ The submodules are regular Maven projects, and they can be built separately or t
   - When we configure the module eureka-server than we should configure also the clients
   - When we are using RestTemplate to make requests to the microservices we should give url path to the microservice for example http://localhost:8081/api/v1/fraud-check/{customerId} , but when we have more instances of our microservices then the port is different, and we cannot hard code the http path, here it comes the Eureka Server where we can have the information for the path and port of our microservices and allow them to communicate each other the http request should look like this http://FRAUD/api/v1/fraud-check/{customerId} for example. Where FRAUD is already registered Eureka Client microservice, and it can be viewed into http://localhost:8761/ address, the port is given by me into application.yml configuration file in eureka-server module.
   - When we have multiple microservices with same name for example Fraud:8081 and Fraud:8085 the request from Customer:8080 should be managed, it can be done with **load balancer**. Which is annotation that is added into CustomerConfig class the load balancer is added into class that makes the request
+
+- Open Feign
+  - OpenFeign dependency **spring-cloud-starter-openfeign**
+  - Create new module for internal and external clients call it **clients**
+  - Create interface for each new client with annotation @FeignClient and add some parameters
+  - OpenFeign still uses EurekaServer to find needed microservices, but not the RestTemplate to create requests to them.
