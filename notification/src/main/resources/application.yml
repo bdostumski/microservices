@@ -1,0 +1,27 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: notification
+  datasource:
+    password: password
+    # If this microservice, was using a different database this line must be changed
+    url: jdbc:postgresql://localhost:5555/notification
+    username: syscomz
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      # ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+# Eureka Client configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true # it is true by default
+    register-with-eureka: true # it is true by default

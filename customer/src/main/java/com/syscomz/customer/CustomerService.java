@@ -2,6 +2,8 @@ package com.syscomz.customer;
 
 import com.syscomz.clients.fraud.FraudCheckResponse;
 import com.syscomz.clients.fraud.FraudClient;
+import com.syscomz.clients.notification.NotificationClient;
+import com.syscomz.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -9,7 +11,8 @@ import org.springframework.web.client.RestTemplate;
 public record CustomerService(
         CustomerRepository customerRepository,
         RestTemplate restTemplate,
-        FraudClient fraudClient
+        FraudClient fraudClient,
+        NotificationClient notificationClient
 ) {
 
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
@@ -40,7 +43,14 @@ public record CustomerService(
         if (fraudCheckResponse.isFraudster())
             throw new IllegalStateException("fraudster");
 
-        // TODO: 1/14/23 send notification
+        // send notification
+        notificationClient.sendNotification(
+                new NotificationRequest(
+                        customer.getId(),
+                        customer.getEmail(),
+                        String.format("Hi %s, welcome to SYSCOMz...", customer.getFirstName())
+                )
+        );
     }
 
 }
