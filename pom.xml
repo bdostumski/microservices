@@ -20,6 +20,7 @@
         <module>clients</module>
         <module>notification</module>
         <module>notification</module>
+        <module>apigw</module>
     </modules>
 
     <properties>
