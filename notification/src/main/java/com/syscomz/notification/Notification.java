@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class Notification   {
+public class Notification {
 
     @Id
     @SequenceGenerator(

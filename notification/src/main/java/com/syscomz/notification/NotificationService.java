@@ -9,9 +9,7 @@ import java.time.LocalDateTime;
 @Service
 @AllArgsConstructor
 public class NotificationService {
-
     private final NotificationRepository notificationRepository;
-
     public void send(NotificationRequest notificationRequest) {
         notificationRepository. save(Notification.builder()
                 .message(notificationRequest.message())

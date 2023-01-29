@@ -17,6 +17,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  # Add Zipkin url. If we are using Spring Profiles we can change base-url into them, according to the environment that we have
+  zipkin:
+    base-url: http://localhost:9411
 
 # Eureka Client configuration
 eureka:

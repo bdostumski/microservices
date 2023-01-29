@@ -14,15 +14,19 @@
 - [Spring Boot Banner](https://devops.datenkollektiv.de/banner.txt/index.html) | Create Own Spring Boot Banner
 - [Spring Cloud Netflix](https://spring.io/projects/spring-cloud-netflix) | Service Discovery (Eureka)
 - [Open Feign](https://spring.io/projects/spring-cloud-openfeign) | Open Feign Documentation
-
+- [Spring Cloud Sleuth](https://spring.io/projects/spring-cloud-sleuth) | Spring Cloud Sleuth provides Spring Boot auto-configuration for distributed tracing.
+- [Open Tracing](https://opentracing.io/) | Distributed tracing, also called distributed request tracing, is a method used to profile and monitor applications, especially those built using a microservices architecture. Distributed tracing helps pinpoint where failures occur and what causes poor performance.
+- [Zipkin](https://zipkin.io/) | Zipkin is a distributed tracing system. It helps gather timing data needed to troubleshoot latency problems in service architectures. The Zipkin UI also presents a Dependency diagram showing how many traced requests went through each application.
+- [Docker Compose for Zipkin](https://github.com/openzipkin-attic/docker-zipkin/blob/master/docker-compose.yml) | Zipkin configuration for docker-compose file
 
 ## Cheat Sheet
 #### Maven
 - mvn archetype:generate -DgroupId=com.syscomz -DartifactId=syscomzservices -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false | Maven Creating Archetypes
 - docker-compose up -d | Run Docker Compose File
 - docker-compose ps | shows ran processes
-- 
 
+#### Zipkin
+- docker run -d -p 9411:9411 openzipkin/zipkin | runs Zipkin into docker container
 
 ## Notes
 - Create Maven Multi-Module Project
@@ -76,3 +80,20 @@ The submodules are regular Maven projects, and they can be built separately or t
   - Create new module for internal and external clients call it **clients**
   - Create interface for each new client with annotation @FeignClient and add some parameters
   - OpenFeign still uses EurekaServer to find needed microservices, but not the RestTemplate to create requests to them.
+
+- Distributed Tracing 
+  - Spring Cloud Sleuth | Spring Cloud Sleuth provides Spring Boot auto-configuration for distributed tracing. Sleuth configures everything you need to get started. This includes where trace data (spans) are reported to, how many traces to keep (sampling), if remote fields (baggage) are sent, and which libraries are traced.
+    - Add Spring Cloud Sleuth dependency to all microservices
+    - In the response into stack trace we have the log which comes from **log.info("new customer registration {}", customerRegistrationRequest);**, and Spring Cloud Sleuth add additional information **[customer,1b32e5c110aeae9b,1b32e5c110aeae9b]** where this is the trace id **1b32e5c110aeae9b**, and this 1b32e5c110aeae9b is **span** id they are added because of **log** command
+    - When we go from customer, to the fraud microservice will see that the trace id into customer is the same as this into fraud trace id, but the span ids are different. This pattern is the same also into notification microservice. 
+      - [customer,a86f2368573ce95f,a86f2368573ce95f] vs [fraud,a86f2368573ce95f,4bdf86c263154fe5] vs [notification,a86f2368573ce95f,c64809a52a015a37]
+      - 2023-01-29 08:18:56.760  INFO [customer,1b32e5c110aeae9b,1b32e5c110aeae9b] 20162 --- [nio-8080-exec-1] com.syscomz.customer.CustomerController  : new customer registration CustomerRegistrationRequest[firstName=Borislav, lastName=Dostumski, email=b.dostumski@gmail.com]
+  - Zipkin | Zipkin is a distributed tracing system. It helps gather timing data needed to troubleshoot latency problems in service architectures. Features include both the collection and lookup of this data. If you have a trace ID in a log file, you can jump directly to it. Otherwise, you can query based on attributes such as service, operation name, tags and duration. Some interesting data will be summarized for you, such as the percentage of time spent in a service, and whether or not operations failed.
+    - docker run -d -p 9411:9411 openzipkin/zipkin | runs Zipkin into docker container
+    - Rerun docker compose file into detached mode
+    - The default port of Zipkin is 9411
+    - **docker logs zipkin** shows zipkin logs
+    - When everything is ready into Zipkin UI click Run Query to see the data. 
+    - If I want to search for a specific Trace ID I can copy it from the trace log and paste it into the search bar.
+  !["Zipkin UI"](./resources/zipkin_ui.png)
+  !["Zipkin UI Dependencies"](./resources/zipkin_ui_dependencies.png)

@@ -1,7 +1,9 @@
 spring:
   application:
     name: eureka-server
-
+  # Add Zipkin url. If we are using Spring Profiles we can change base-url into them, according to the environment that we have
+  zipkin:
+    base-url: http://localhost:9411
 server:
   port: 8761
 
