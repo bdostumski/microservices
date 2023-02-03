@@ -21,6 +21,14 @@
 - [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) | **this is load balancer from spring cloud for local usage**  and it's aims to provide a simple, yet effective way to route to APIs and provide cross-cutting concerns to them such as: security, monitoring/metrics, and resiliency.
 
 ## Cheat Sheet
+- docker network create postgres | for this project create postgres network
+- docker volume create postgres | for this project create postgres volume
+- docker inspect \[containerId\] | if the hostname doesn't work then show the container information, copy the Gateway IP address of the Postgres image, and paste it into hostname / address
+- docker network prune | delete unused networks
+- docker volume prune | delete unused volumes
+- docker network ls | show networks
+- docker volume ls | show volumes
+
 #### Maven
 - mvn archetype:generate -DgroupId=com.syscomz -DartifactId=syscomzservices -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false | Maven Creating Archetypes
 - docker-compose up -d | Run Docker Compose File
