@@ -10,12 +10,7 @@
     </parent>
 
     <artifactId>amqp</artifactId>
-
-    <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <packaging>jar</packaging> <!-- will use maven-compiler-plugin from the parent POM.xml, but we need to specify packaging file -->
 
     <dependencies>
         <!-- Add RabbitMQ dependency AMQP (Advanced Message Queue Protocol) -->

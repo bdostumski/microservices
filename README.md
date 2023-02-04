@@ -25,8 +25,15 @@
 - [Amazon SQS](https://aws.amazon.com/sqs/) | **Amazon SQS** is a fully managed **message queuing** for microservices, distributed systems, and serverless applications
 - [When to use RabitMQ over Kafka?](https://stackoverflow.com/questions/42151544/when-to-use-rabbitmq-over-kafka) | When to use RabitMQ over Kafka?
 - [RabbitMQ Tutorials](https://www.rabbitmq.com/tutorials/amqp-concepts.html) | AMQP Concepts
+- [Apache Maven](https://maven.apache.org/index.html) | Apache Maven is a software project management and comprehension tool. Based on the concept of a project object model (POM), Maven can manage a project's build, reporting and documentation from a central piece of information.
+- [Apache Maven Compiler Plugin](https://maven.apache.org/plugins/maven-compiler-plugin/) | The Compiler Plugin is used to compile the sources of your project.
+- [Spring Boot Maven Plugin Documentation](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/) | It allows you to package executable jar or war archives, run Spring Boot applications, generate build information and start your Spring Boot application prior to running integration tests.
+- [Apache Maven Lifecycle](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html) | Introduction to the Build Lifecycle
 
 ## Cheat Sheet
+- mvn spring-boot:run | usin spring boot to run the microservice
+- java -jar file_name.jar | using java to run jar files
+
 - docker network create postgres | for this project create postgres network
 - docker volume create postgres | for this project create postgres volume
 - docker inspect \[containerId\] | if the hostname doesn't work then show the container information, copy the Gateway IP address of the Postgres image, and paste it into hostname / address
@@ -53,6 +60,14 @@
 - To create new instance from microservice we should click on Edit Configurations from the tab that is placed before play button in the main screen top right. After that we should create a copy of the microservice that we want a new instance. Into Program Arguments tab we must add **--server.port=8085** that specify new port of our instance of the microservice, and then click play button (run button)
 - Cross-Origin Resource Sharing (CORS) is an HTTP-header based mechanism that allows a server to indicate any origins (domain, scheme, or port) other than its own from which a browser should permit loading resources.
 - What Is Round-Robin Load Balancing? Round‑robin load balancing is one of the simplest methods for distributing client requests across a group of servers. Going down the list of servers in the group, the round‑robin load balancer forwards a client request to each server in turn.
+- Maven lifecycle:
+  - validate | validate the project is correct and all necessary information is available
+  - compile | compile the source code of the project
+  - test | test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed
+  - package | take the compiled code and package it in its distributable format, such as a JAR.
+  - verify | run any checks on results of integration tests to ensure quality criteria are met
+  - install | install the package into the local repository, for use as a dependency in other projects locally
+  - deploy | done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
 
 ## Description
 - Maven Multi-Module Project
@@ -197,3 +212,19 @@ The submodules are regular Maven projects, and they can be built separately or t
       - Create new package rabbitmq into Notification module and add @RabbitListener to listens for the messages in Queue, after that save the payload from queues into database
       - This is how the tracing looks like once we publish and consume messages from queues
   !["RabbitMQ Zipkin after request"](./resources/rabbitmq_zipkin_afther_request.png)
+- Packaging Microservices to Runnable Jar file
+  - Maven Compiler Plugin (Will use Apache Maven, and Apache Maven Compiler Plugin, links are above into **Links** section)
+    - Into main POM.xml file add maven-compiler-plugin and specify source, and target versions to the current Java version in this case 18. Add <packaging>jar</packaging> to the sum POM.xml 's  to specify the type of the packaging. After that on the right menu choose maven choose microservice -> lifecycle -> clean (to remove old target folder) -> compile (to create new target folder) -> package (to create jar file, into target folder).
+    - After that into every module add only declarations of the dependencies, without the versions. 
+  - Install Root and Individual modules with Maven
+    - We should first build the dependencies for our project and after that the other modules. For example in this project dependencies are **amqp, clients** modules. Because they are missing into .m2/repository/com directory.
+    - Go to the root folder in this case syscomzservices and then Lifecycle click clean, after that install (this should install all the modules).
+      - We can **install** from the root module and also every single module separately. So if for example my team is working on the customer module I can basically **install** the jar file independently of other teams.
+- Running all jars
+  - Every jar file is placed into target folder for each module
+    - Only the modules that have spring-boot-mave plugin will have two jar files. The original jar file will be renamed to the file_name.jar.original, and the repackaged jar file will be file_name.jar. Thats because we have <goal>repackage</goal> into main pom.xml
+  - Run microservices
+    - Run all microservices one by one with spring-boot or java
+      - mvn spring-boot:run | usin spring boot to run the microservice
+      - java -jar file_name.jar | using java to run jar files
+    - Run all the microservices except amqp, and clients they are not runnable, they are only dependencies to the other microservices 
