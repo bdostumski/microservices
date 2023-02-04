@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class NotificationController {
     private NotificationService notificationService;
+
     @PostMapping
     public void sendNotification(@RequestBody NotificationRequest notificationRequest) {
-        log.info("New notification... {}", notificationRequest);
-                notificationService.send(notificationRequest);
+            log.info("New notification... {}", notificationRequest);
+        notificationService.send(notificationRequest);
     }
 
 }

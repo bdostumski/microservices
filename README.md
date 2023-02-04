@@ -19,6 +19,12 @@
 - [Zipkin](https://zipkin.io/) | Zipkin is a distributed tracing system. It helps gather timing data needed to troubleshoot latency problems in service architectures. The Zipkin UI also presents a Dependency diagram showing how many traced requests went through each application.
 - [Docker Compose for Zipkin](https://github.com/openzipkin-attic/docker-zipkin/blob/master/docker-compose.yml) | Zipkin configuration for docker-compose file
 - [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) | **this is load balancer from spring cloud for local usage**  and it's aims to provide a simple, yet effective way to route to APIs and provide cross-cutting concerns to them such as: security, monitoring/metrics, and resiliency.
+- [RabbitMQ AMQP 0-9-1 Model Explained](https://www.rabbitmq.com/tutorials/amqp-concepts.html) | This guide provides an overview of the AMQP 0-9-1 protocol, one of the protocols supported by RabbitMQ.
+- [Apache Kafka](https://kafka.apache.org/) | **Apache Kafka** is an open-source distributed **event streaming platform** used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications.
+- [RabbitMQ](https://www.rabbitmq.com/) | **RabbitMQ** is the most widely deployed open source **message broker**.
+- [Amazon SQS](https://aws.amazon.com/sqs/) | **Amazon SQS** is a fully managed **message queuing** for microservices, distributed systems, and serverless applications
+- [When to use RabitMQ over Kafka?](https://stackoverflow.com/questions/42151544/when-to-use-rabbitmq-over-kafka) | When to use RabitMQ over Kafka?
+- [RabbitMQ Tutorials](https://www.rabbitmq.com/tutorials/amqp-concepts.html) | AMQP Concepts
 
 ## Cheat Sheet
 - docker network create postgres | for this project create postgres network
@@ -141,3 +147,34 @@ The submodules are regular Maven projects, and they can be built separately or t
   !["My Own Eureka Server"](./resources/eureka_server_my_own.png)
     - When we check the request into Zipkin we will see that it was made a POST request to the api-geteway, and then the api-getway send it to the customer from customer it went to fraud and again to notification.
   !["Check load balancer request through Zipkin](./resources/load_balancer_zipkin_show_request.png)
+  - Message Queues
+    - When we have a service that takes more time to be executed, and the response doesn't have to be immediate we can use asynchronous requests (in this project Notification microservice will receive async requests).
+    - Simulate Slow Responses (into NotificationController microservice): when we add a breakpoint into NotificationController and make a request from Postman will see that the request goes to the breakpoint and the Postman freezes until waiting for the response or get error status code 500) 
+    - In Zipkin we can check the calls that we made.
+    - To solve this problem will create MessageQueue microservice with (Kafka, RabbitMQ AMQP 0-9-1 Protocol) in it.
+    - AMQP 0-9-1 (Advanced Message Queuing Protocol) is a messaging protocol that enables conforming client applications to communicate with conforming messaging middleware brokers.
+  !["AMPQ 0-9-1 Protocol Explained](./resources/rabbitmq_amqp_model.png)
+    - Brokers and Their Role
+      -Messaging brokers receive messages from publishers (applications that publish them, also known as producers) and route them to consumers (applications that process them). 
+      - Since it is a network protocol, the publishers, consumers and the broker can all reside on different machines.
+  !["RabbitMQ Architecture"](./resources/rabbitmq_architecture.png)
+    - If the Notification microservice is down then the Broker will receive the messages from Fraud and Customer microservices and will store them in Notification Queue, until the Notification microservice is up and running again.
+    - Messages in Notification Queue, are not get removed unless the consumer acknowledges (Acks) that it has receive the message.
+    - When to use RabbitMQ over Kafka? from https://stackoverflow.com/questions/42151544/when-to-use-rabbitmq-over-kafka
+      - RabbitMQ is a solid, general-purpose message broker that supports several protocols such as AMQP, MQTT, STOMP, etc. It can handle high throughput. A common use case for RabbitMQ is to handle background jobs or long-running task, such as file scanning, image scaling or PDF conversion. RabbitMQ is also used between microservices, where it serves as a means of communicating between applications, avoiding bottlenecks passing messages. 
+      - Kafka is a message bus optimized for high-throughput ingestion data streams and replay. Use Kafka when you have the need to move a large amount of data, process data in real-time or analyze data over a time period. In other words, where data need to be collected, stored, and handled. An example is when you want to track user activity on a webshop and generate suggested items to buy. Another example is data analysis for tracking, ingestion, logging or security. 
+      - Kafka can be seen as a durable message broker where applications can process and re-process streamed data on disk. Kafka has a very simple routing approach. RabbitMQ has better options if you need to route your messages in complex ways to your consumers. Use Kafka if you need to support batch consumers that could be offline or consumers that want messages at low latency. 
+      - In order to understand how to read data from Kafka, we first need to understand its consumers and consumer groups. Partitions allow you to parallelize a topic by splitting the data across multiple nodes. Each record in a partition is assigned and identified by its unique offset. This offset points to the record in a partition. In the latest version of Kafka, Kafka maintains a numerical offset for each record in a partition. A consumer in Kafka can either automatically commit offsets periodically, or it can choose to control this committed position manually. RabbitMQ will keep all states about consumed/acknowledged/unacknowledged messages. I find Kafka more complex to understand than the case of RabbitMQ, where the message is simply removed from the queue once it's acked. 
+      - RabbitMQ's queues are fastest when they're empty, while Kafka retains large amounts of data with very little overhead - Kafka is designed for holding and distributing large volumes of messages. (If you plan to have very long queues in RabbitMQ you could have a look at lazy queues.)
+      - Kafka is built from the ground up with horizontal scaling (scale by adding more machines) in mind, while RabbitMQ is mostly designed for vertical scaling (scale by adding more power). 
+      - RabbitMQ has a built-in user-friendly interface that lets you monitor and handle your RabbitMQ server from a web browser. Among other things, queues, connections, channels, exchanges, users and user permissions can be handled - created, deleted and listed in the browser and you can monitor message rates and send/receive messages manually. Kafka has a number of open-source tools, and also some commercial ones, offering the administration and monitoring functionalities. I would say that it's easier/gets faster to get a good understanding of RabbitMQ. 
+      - In general, if you want a simple/traditional pub-sub message broker, the obvious choice is RabbitMQ, as it will most probably scale more than you will ever need it to scale. I would have chosen RabbitMQ if my requirements were simple enough to deal with system communication through channels/queues, and where retention and streaming is not a requirement. 
+      - There are two main situations where I would choose RabbitMQ; For long-running tasks, when I need to run reliable background jobs. And for communication and integration within, and between applications, i.e as middleman between microservices; where a system simply needs to notify another part of the system to start to work on a task, like ordering handling in a webshop (order placed, update order status, send order, payment, etc.). 
+      - In general, if you want a framework for storing, reading (re-reading), and analyzing streaming data, use Apache Kafka. It’s ideal for systems that are audited or those that need to store messages permanently. These can also be broken down into two main use cases for analyzing data (tracking, ingestion, logging, security etc.) or real-time processing.
+    - RabbitMQ messages exchange
+      - The Exchange has different types: 
+        - Direct exchange (routing-key and the binding-key have to be the same)
+        - Fanout exchange (producer sends message, this message will be sent to all queues. Every queue will receive the exact same message)
+        - Topic exchange (partial match -> if for example binding-key is foo.* and the routing-key is fool.bar then the message will be sent to there)
+        - Headers exhange (Default for RabbitMQ exchange also called Nameless exchange (where the routing-key is equals to the queue name). In this exchange, is when the routing-key is equals to the queue-name.)
+  !["RabbitMQ Messages Exchange"](./resources/rabbitmq_messages_exchange.png)
