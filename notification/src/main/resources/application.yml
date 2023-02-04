@@ -20,6 +20,9 @@ spring:
   # Add Zipkin url. If we are using Spring Profiles we can change base-url into them, according to the environment that we have
   zipkin:
     base-url: http://localhost:9411
+  # Specify where RabbitMQ lives
+  rabbitmq:
+    addresses: localhost:5672 # this is not use http protocol is uses its own ampq protocol by default amqp://guest@127.0.0.1:5672/
 
 # Eureka Client configuration
 eureka:
@@ -28,3 +31,13 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     fetch-registry: true # it is true by default
     register-with-eureka: true # it is true by default
+
+# Setup properties to how to connect to our Queue (including the exchange, and the routing-key)
+# These values are used from NotificationConfig class - this is a better way because if we have multiple environments it will be easier to make changes
+rabbitmq:
+  exchanges:
+    internal: internal.exchange # this is Topic Exchanges where receives and sends messages. From the image this is drawing as a circle
+  queue:
+    notification: notification.queue # this is the Queue it receives the messages from the Exchange and send it to the microservice
+  routing-keys:
+    internal-notification: internal.notification.routing-key # this map the Exchange with Queue using the binding mechanism

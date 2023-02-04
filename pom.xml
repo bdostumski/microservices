@@ -21,6 +21,7 @@
         <module>notification</module>
         <module>notification</module>
         <module>apigw</module>
+        <module>amqp</module>
     </modules>
 
     <properties>

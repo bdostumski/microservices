@@ -71,6 +71,13 @@ services:
       # - 9410:9410
 #    depends_on:
 #      - storage
+  # Add RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3.9.11-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # in this port the application will be connected to | here are messages published
+      - "15672:15672" # this port is for management console | open RabbitMQ from this port localhost:15672 | default username and password is: guest
 
 networks:
   postgres:

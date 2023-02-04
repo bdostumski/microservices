@@ -1,5 +1,6 @@
 package com.syscomz.customer;
 
+import com.syscomz.amqp.RabbitMQMessageProducer;
 import com.syscomz.clients.fraud.FraudCheckResponse;
 import com.syscomz.clients.fraud.FraudClient;
 import com.syscomz.clients.notification.NotificationClient;
@@ -12,7 +13,8 @@ public record CustomerService(
         CustomerRepository customerRepository,
         RestTemplate restTemplate,
         FraudClient fraudClient,
-        NotificationClient notificationClient
+        NotificationClient notificationClient,
+        RabbitMQMessageProducer rabbitMQMessageProducer
 ) {
 
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
@@ -43,14 +45,15 @@ public record CustomerService(
         if (fraudCheckResponse.isFraudster())
             throw new IllegalStateException("fraudster");
 
+        NotificationRequest notificationRequest = new NotificationRequest(customer.getId(), customer.getEmail(),
+                String.format("Hi %s, welcome to SYSCOMz...", customer.getFirstName()));
+
         // send notification
-        notificationClient.sendNotification(
-                new NotificationRequest(
-                        customer.getId(),
-                        customer.getEmail(),
-                        String.format("Hi %s, welcome to SYSCOMz...", customer.getFirstName())
-                )
-        );
+        // after the RabbitMQ implementation we no longer need to send notifications directly to the Notification microservice
+        //        notificationClient.sendNotification(notificationRequest);
+
+        // Instead we send notifications directly to the Notification microservice, we will use RabbitMQ
+        rabbitMQMessageProducer.publish(notificationRequest, "internal.exchange", "internal.notification.routing-key");
     }
 
 }

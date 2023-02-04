@@ -178,3 +178,22 @@ The submodules are regular Maven projects, and they can be built separately or t
         - Topic exchange (partial match -> if for example binding-key is foo.* and the routing-key is fool.bar then the message will be sent to there)
         - Headers exhange (Default for RabbitMQ exchange also called Nameless exchange (where the routing-key is equals to the queue name). In this exchange, is when the routing-key is equals to the queue-name.)
   !["RabbitMQ Messages Exchange"](./resources/rabbitmq_messages_exchange.png)
+  - RabbitMQ
+  !["RabbitMQ Screenshot"](./resources/rabbitmq_screen.png)
+    - Create new module amqp (Advanced Message Queue Protocol) add dependencies (spring-boot-starter-amqp)
+    - In this module we will (Publish message to the queue, and define the listener, to receive messages from the queue)
+      - Send messages to the Queue and convert the Java Object into JSON, by using the JacksonConverter
+      - Receive messages from the Queue and convert the JSON to the Java Object, by using the JacksonConverter
+    - Second thing to do - is to setup exchange, queues and bind the exchange to the specific queue
+      - So we need to setup Customer and Notification microservices, for this purpose add depencencies (spring-boot-starter-amqp, and my own module amqp from com.syscomz)
+      - Setup Notification module to receive messages from AMQP Queue (also setup application.yml file properties to how to connect to our Queue (including the exchange, and the routing-key))
+      - Bind Exchange and Queue together. Into NotificationConfig class add methods internalTopicExchange(), notificationQueue(), and internalToNotificationBinding()
+      - Setup Message Producer to send messages to Exchange. Go to the package com.syscomz.amqp and create new class RabbitMQMessageProducer.
+    - We managed to send message to our Queue (Purge messages - to delete all messages)
+  !["RabbitMQ Message Payload"](./resources/rabbitmq_message_payload.png)
+      - Send message from Customer microservice to the Exchange/Queue
+        - Go to the Customer module, application.yml (add rabitmq.address:localhost:5672 configuration) and into CustomerApplication class to the @SpringBootApplication add scanBasePackages, and into CustomerService change direct connection to the Notification microservice with RabbitMQ microservice
+    - Send messages from Queue to the Notification microservice with @RabbitListener
+      - Create new package rabbitmq into Notification module and add @RabbitListener to listens for the messages in Queue, after that save the payload from queues into database
+      - This is how the tracing looks like once we publish and consume messages from queues
+  !["RabbitMQ Zipkin after request"](./resources/rabbitmq_zipkin_afther_request.png)
