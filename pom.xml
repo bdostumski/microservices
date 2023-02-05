@@ -30,6 +30,10 @@
         <spring.boot.maven.plugin.version>2.5.7</spring.boot.maven.plugin.version>
         <spring.boot.dependencies.version>2.5.7</spring.boot.dependencies.version>
         <spring.cloud-version>2020.0.3</spring.cloud-version>
+        <!-- The name of the image that we will produce from Docker Hub -->
+        <!-- It will take the <artifactId>notification</artifactId> and the <version>1.0-SNAPSHOT</version> from every single microservice -->
+        <!-- Example: bdostumski/notification:1.0-SNAPSHOT or something -->
+        <image>bdostumski/${project.artifactId}:${project.version}</image>
     </properties>
 
     <!-- All submodules can pick the dependency that they want -->
@@ -91,6 +95,59 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- Jib to containerize our Java code -->
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>3.1.4</version>
+                    <!-- default configuration for all our microservices -->
+                    <!-- Check for Java your version in google search for "adoptopenjdk docker" because it is deprecated go Eclipse Temurin  -->
+                    <!-- Because I want to use exact same image.
+                    Or if this image eclipse-temurin:17 is changed internal at some point of a time in the future (I want to use the image that I am use today).
+                    The hash is added by me @sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc to make share that I am using the exact same image -->
+                    <configuration>
+                        <from>
+                            <image>
+                                eclipse-temurin:17@sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc
+                            </image>
+                            <!-- Configuration for different architectures -->
+                            <!-- The platform configuration will not let me build Docker Images locally, may be it is a bug -->
+                            <platforms>
+                                <platform>
+                                    <architecture>arm64</architecture>
+                                    <os>linux</os>
+                                </platform>
+                                <platform>
+                                    <architecture>amd64</architecture>
+                                    <os>linux</os>
+                                </platform>
+                            </platforms>
+                        </from>
+                        <!-- The image that we want the JIB to build -->
+                        <to>
+                            <tags>
+                                <tag>latest</tag>
+                            </tags>
+                        </to>
+                    </configuration>
+                    <!-- I want to centralize this <execution> for all my microservice that's why I am move this code into main pom.xml below the <configuration> tag -->
+                    <!-- If this execution is different for the other microservice than every microservice should have its own <execution> tag -->
+                    <!-- For example, you can check the pom.xml configuration in apigw microservice where I am let commented example -->
+                    <executions>
+                        <execution>
+                            <!-- After the package I want to run the goal below the <phase> -->
+                            <phase>package</phase>
+                            <goals>
+                                <!-- This will build our image and push it to our Docker Registry -->
+                                <goal>build</goal>
+                                <!-- This will build tart file -->
+                                <!-- <goal>buildTar</goal>-->
+                                <!-- This will build local Docker Image -->
+                                <!-- <goal>dockerBuild</goal>-->
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <!-- Add Maven Compiler Plugin -->
@@ -99,7 +156,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.8.0</version>
                 <configuration>
                     <source>17</source> <!-- Java version -->
                     <target>17</target> <!-- Java version -->

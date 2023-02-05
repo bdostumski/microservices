@@ -11,7 +11,48 @@
     </parent>
 
     <artifactId>apigw</artifactId>
-    <packaging>jar</packaging> <!-- will use maven-compiler-plugin from the parent POM.xml, but we need to specify packaging file -->
+    <packaging>jar
+    </packaging> <!-- will use maven-compiler-plugin from the parent POM.xml, but we need to specify packaging file -->
+
+    <!-- Uses the build configuraiton from the parent module -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- To run this profile from the terminal write: mvn clean package -P build-docker-image -->
+    <profiles>
+        <profile>
+            <id>build-docker-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <!-- If I want to centralize this <execution> I can move this code into main pom.xml below the <configuration> tag -->
+                        <!-- <executions> -->
+                        <!-- <execution> -->
+                        <!-- After the package I want to run the goal below the <phase> -->
+                        <!--  <phase>package</phase> -->
+                        <!-- <goals> -->
+                        <!-- This will build our image and push it to our Docker Registry -->
+                        <!-- <goal>build</goal> -->
+                        <!-- This will build tart file -->
+                        <!-- <goal>buildTar</goal>-->
+                        <!-- This will build local Docker Image -->
+                        <!-- <goal>dockerBuild</goal>-->
+                        <!-- </goals> -->
+                        <!--  </execution> -->
+                        <!-- </executions> -->
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- API Gateway load balancer -->
@@ -35,15 +76,5 @@
             <artifactId>spring-cloud-sleuth-zipkin</artifactId>
         </dependency>
     </dependencies>
-
-    <!-- Uses the build configuraiton from the parent module -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

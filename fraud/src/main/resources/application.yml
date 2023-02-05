@@ -6,7 +6,7 @@ spring:
   datasource:
     password: password
     # If this microservice, was using a different database this line must be changed
-    url: jdbc:postgresql://localhost:5555/fraud
+    url: jdbc:postgresql://localhost:5432/fraud
     username: syscomz
   jpa:
     hibernate:
@@ -28,3 +28,4 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     fetch-registry: true # it is true by default
     register-with-eureka: true # it is true by default
+    enabled: true

@@ -1,0 +1,25 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: api-gateway
+  # Add Zipkin url. If we are using Spring Profiles we can change base-url into them, according to the environment that we have
+  zipkin:
+    base-url: http://zipkin:9411 # if we want to use docker-compose.yml to start all the microservices at once then we should change the name from localhost to the container_name of the microservice from docker-compose.yml file, so that the docker network can find them, to do not that I can duplicate application.yml file
+  # Setup Spring Could Gateway custom load balancer routes
+  cloud:
+    gateway:
+      routes:
+        - id: customer
+          uri: lb://CUSTOMER
+          predicates:
+            - Path=/api/v1/customers/**
+
+# Eureka Client configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    fetch-registry: true # it is true by default
+    register-with-eureka: true # it is true by default

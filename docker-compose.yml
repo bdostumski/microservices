@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres:/data/postgres
     ports:
-      - "5555:5432"
+      - "5432:5432"
     networks:
       - postgres
     restart: unless-stopped
@@ -27,7 +27,7 @@ services:
 #    volumes:
 #      - postgres:/data/postgres
 #    ports:
-#      - "5556:5432"
+  #      - "5556:5432"
 #    networks:
 #      - postgres
 #    restart: unless-stopped
@@ -71,6 +71,8 @@ services:
       # - 9410:9410
 #    depends_on:
 #      - storage
+    networks:
+      - spring
   # Add RabbitMQ
   rabbitmq:
     image: rabbitmq:3.9.11-management-alpine
@@ -78,9 +80,79 @@ services:
     ports:
       - "5672:5672" # in this port the application will be connected to | here are messages published
       - "15672:15672" # this port is for management console | open RabbitMQ from this port localhost:15672 | default username and password is: guest
-
+  # Adding Eureka Server and ApiGW to Docker Compose
+  eureka-server:
+    image: bdostumski/eureka-server:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker # this is the name after application-docker.yml on each microservice
+    networks:
+      - spring
+    depends_on:
+      - zipkin
+  apigw:
+    image: bdostumski/apigw:latest
+    container_name: apigw
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker # this is the name after application-docker.yml on each microservice
+    networks:
+      - spring
+    depends_on:
+      - zipkin
+      - eureka-server
+  customer:
+    image: bdostumski/customer:latest
+    container_name: customer
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
+  fraud:
+    image: bdostumski/fraud:latest
+    container_name: fraud
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
+  notification:
+    image: bdostumski/notification:latest
+    container_name: notification
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
 networks:
   postgres:
+    driver: bridge
+  spring:
     driver: bridge
 
 volumes:

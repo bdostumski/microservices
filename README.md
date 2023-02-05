@@ -29,6 +29,10 @@
 - [Apache Maven Compiler Plugin](https://maven.apache.org/plugins/maven-compiler-plugin/) | The Compiler Plugin is used to compile the sources of your project.
 - [Spring Boot Maven Plugin Documentation](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/) | It allows you to package executable jar or war archives, run Spring Boot applications, generate build information and start your Spring Boot application prior to running integration tests.
 - [Apache Maven Lifecycle](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html) | Introduction to the Build Lifecycle
+- [Jib Containerize Java Applications](https://github.com/GoogleContainerTools/jib) | Jib builds optimized Docker and OCI images for your Java applications without a Docker daemon - and without deep mastery of Docker best-practices. It is available as plugins for Maven and Gradle and as a Java library.
+- [AdoptOpenJDK provides prebuilt OpenJDK DEPRICATED use Eclipse Temurin](https://hub.docker.com/_/adoptopenjdk) | AdoptOpenJDK provides prebuilt OpenJDK binaries from a fully open source set of build scripts and infrastructure.
+- [Provide JRE (Java Runtime Environment) Images](https://hub.docker.com/_/eclipse-temurin/) | Official Images for OpenJDK binaries built by Eclipse Temurin.
+- [Spring Profiles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles) | Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
 
 ## Cheat Sheet
 - mvn spring-boot:run | usin spring boot to run the microservice
@@ -41,6 +45,8 @@
 - docker volume prune | delete unused volumes
 - docker network ls | show networks
 - docker volume ls | show volumes
+- docker logs \[container_name\] | check the logs for the container
+- docker-compose pull | pull the latest images from our Docker Hub repository
 
 #### Maven
 - mvn archetype:generate -DgroupId=com.syscomz -DartifactId=syscomzservices -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false | Maven Creating Archetypes
@@ -68,6 +74,7 @@
   - verify | run any checks on results of integration tests to ensure quality criteria are met
   - install | install the package into the local repository, for use as a dependency in other projects locally
   - deploy | done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
+- JAR: A JAR is a package file format typically used to aggregate may Java class files and associated metadata and resources into one file for distribution. JAR files are archive files that include a Java-specific manifest file. They are build on the Zip format and typically have a .jar file extension.
 
 ## Description
 - Maven Multi-Module Project
@@ -99,8 +106,8 @@ The submodules are regular Maven projects, and they can be built separately or t
     - Register - clients will register themselves into Eureka Server (server will know the host and the port of the clients)
     - Lookup - when microservice need to talk to another microservice, they will lookup this information into Eureka Server 
     - Connect - and then the two microservices will connect to each other
-    !["Eureka Server Communication Image"](./resources/eureka_server_communication.png)
-    !["Eureka Server Communcation Example Image"](./resources/eureka_server_communication_example.png)
+!["Eureka Server Communication Image"](./resources/eureka_server_communication.png)
+!["Eureka Server Communcation Example Image"](./resources/eureka_server_communication_example.png)
   - Into pom.xml add Spring Cloud Dependency. It provides tools for developers to quickly build some common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus, one-time tokens, global locks, leadership election, distributed sessions, cluster state) 
   - View the sever information go to home page of Eureka Server the address is localhost:8761 port is given by me into application.yml file
   - When we configure the module eureka-server than we should configure also the clients
@@ -129,8 +136,8 @@ The submodules are regular Maven projects, and they can be built separately or t
     - **docker logs zipkin** shows zipkin logs
     - When everything is ready into Zipkin UI click Run Query to see the data. 
     - If I want to search for a specific Trace ID I can copy it from the trace log and paste it into the search bar.
-  !["Zipkin UI"](./resources/zipkin_ui.png)
-  !["Zipkin UI Dependencies"](./resources/zipkin_ui_dependencies.png)
+!["Zipkin UI"](./resources/zipkin_ui.png)
+!["Zipkin UI Dependencies"](./resources/zipkin_ui_dependencies.png)
 
 - API Gateway With Spring Cloud Gateway
   - Load Balancer refers to efficiently distributing incoming network traffic across a group of backend services.   
@@ -145,34 +152,34 @@ The submodules are regular Maven projects, and they can be built separately or t
     - [Google Cloud Load Balancer description example](https://cloud.google.com/load-balancing)
     - [AWS Load Balancer description example](https://aws.amazon.com/elasticloadbalancing/)
     - [NGINX Load Balancer documentation](https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/)
-    !["Internal and External Load Balancers](./resources/load_balancer.png)
+!["Internal and External Load Balancers](./resources/load_balancer.png)
   - Load Balancer Algorithms
     - The load balancer algorithm can be chosen: the most commonly used is (**Round Robin - Requests are distributed across the group of services sequentially**). For example if we have nodes with addresses 192.168.1.2 and 192.168.1.3. When we make a request the load balancer will send the request first into 192.168.1.2 and after that if we make another request the load balancer will send this request to the node with address 192.168.1.3.
     - This is an example for NGINX but if we choose for example AWS Elastic Load Balancing then we should check the algorithms that they present
-  !["Load Balancer Algorithms](./resources/load_balancer_algorithms.png) 
+!["Load Balancer Algorithms](./resources/load_balancer_algorithms.png) 
   - Load Balancer Health Checks
     - Load balancer checks for the health of the microservices if the health is OK 200 then the load balancer will send the request.
     - There are different ways to define the health checks for the microservice. Take a look the example below the PDF microservice does not use database and we can check only if the microservice is up and running, but for the Customer microservice we are using also a database, then the health check will be is the microservice up and running and also can them microservice connect to the database. Then if all of this checks pass then the Customer microservice will send OK 200 status back to the load balancer.  
-    !["Load Balancer Health Checks"](./resources/load_balancer_health_checks.png)
+!["Load Balancer Health Checks"](./resources/load_balancer_health_checks.png)
   - Spring Cloud Gateway **this is load balancer from spring cloud for local usage** (This project provides a library for building an API Gateway on top of Spring WebFlux. Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross cutting concerns to them such as: security, monitoring/metrics, and resiliency.)
     - This is for leaning purposes, we must use predefined load balancers from AWS, Google, and others. 
     - I am using this load balancer configuration into **apigw** (api gateway) module
     - As we know all the application is protected by private network, only the **external load balancer** can make requests to the microservices. While I am into local machine this is not a problem because I can make requests directly to the microservices without load balancer for example POST request to localhost:8080/api/v1/customers end point in the local machine it will work fine, but when we are upload our application into cloud provider then it will be permitted for us to make requests to the private network, only the load balancer will do this.
     - To test load balancer requests we should change the port from this of the microservice localhost:8080/api/v1/customers to this of the load balancer which is localhost:8083/api/v1/customers
-  !["My Own Eureka Server"](./resources/eureka_server_my_own.png)
+!["My Own Eureka Server"](./resources/eureka_server_my_own.png)
     - When we check the request into Zipkin we will see that it was made a POST request to the api-geteway, and then the api-getway send it to the customer from customer it went to fraud and again to notification.
-  !["Check load balancer request through Zipkin](./resources/load_balancer_zipkin_show_request.png)
+!["Check load balancer request through Zipkin](./resources/load_balancer_zipkin_show_request.png)
   - Message Queues
     - When we have a service that takes more time to be executed, and the response doesn't have to be immediate we can use asynchronous requests (in this project Notification microservice will receive async requests).
     - Simulate Slow Responses (into NotificationController microservice): when we add a breakpoint into NotificationController and make a request from Postman will see that the request goes to the breakpoint and the Postman freezes until waiting for the response or get error status code 500) 
     - In Zipkin we can check the calls that we made.
     - To solve this problem will create MessageQueue microservice with (Kafka, RabbitMQ AMQP 0-9-1 Protocol) in it.
     - AMQP 0-9-1 (Advanced Message Queuing Protocol) is a messaging protocol that enables conforming client applications to communicate with conforming messaging middleware brokers.
-  !["AMPQ 0-9-1 Protocol Explained](./resources/rabbitmq_amqp_model.png)
+!["AMPQ 0-9-1 Protocol Explained](./resources/rabbitmq_amqp_model.png)
     - Brokers and Their Role
       -Messaging brokers receive messages from publishers (applications that publish them, also known as producers) and route them to consumers (applications that process them). 
       - Since it is a network protocol, the publishers, consumers and the broker can all reside on different machines.
-  !["RabbitMQ Architecture"](./resources/rabbitmq_architecture.png)
+!["RabbitMQ Architecture"](./resources/rabbitmq_architecture.png)
     - If the Notification microservice is down then the Broker will receive the messages from Fraud and Customer microservices and will store them in Notification Queue, until the Notification microservice is up and running again.
     - Messages in Notification Queue, are not get removed unless the consumer acknowledges (Acks) that it has receive the message.
     - When to use RabbitMQ over Kafka? from https://stackoverflow.com/questions/42151544/when-to-use-rabbitmq-over-kafka
@@ -192,9 +199,9 @@ The submodules are regular Maven projects, and they can be built separately or t
         - Fanout exchange (producer sends message, this message will be sent to all queues. Every queue will receive the exact same message)
         - Topic exchange (partial match -> if for example binding-key is foo.* and the routing-key is fool.bar then the message will be sent to there)
         - Headers exhange (Default for RabbitMQ exchange also called Nameless exchange (where the routing-key is equals to the queue name). In this exchange, is when the routing-key is equals to the queue-name.)
-  !["RabbitMQ Messages Exchange"](./resources/rabbitmq_messages_exchange.png)
+!["RabbitMQ Messages Exchange"](./resources/rabbitmq_messages_exchange.png)
   - RabbitMQ
-  !["RabbitMQ Screenshot"](./resources/rabbitmq_screen.png)
+!["RabbitMQ Screenshot"](./resources/rabbitmq_screen.png)
     - Create new module amqp (Advanced Message Queue Protocol) add dependencies (spring-boot-starter-amqp)
     - In this module we will (Publish message to the queue, and define the listener, to receive messages from the queue)
       - Send messages to the Queue and convert the Java Object into JSON, by using the JacksonConverter
@@ -205,13 +212,13 @@ The submodules are regular Maven projects, and they can be built separately or t
       - Bind Exchange and Queue together. Into NotificationConfig class add methods internalTopicExchange(), notificationQueue(), and internalToNotificationBinding()
       - Setup Message Producer to send messages to Exchange. Go to the package com.syscomz.amqp and create new class RabbitMQMessageProducer.
     - We managed to send message to our Queue (Purge messages - to delete all messages)
-  !["RabbitMQ Message Payload"](./resources/rabbitmq_message_payload.png)
+!["RabbitMQ Message Payload"](./resources/rabbitmq_message_payload.png)
       - Send message from Customer microservice to the Exchange/Queue
         - Go to the Customer module, application.yml (add rabitmq.address:localhost:5672 configuration) and into CustomerApplication class to the @SpringBootApplication add scanBasePackages, and into CustomerService change direct connection to the Notification microservice with RabbitMQ microservice
     - Send messages from Queue to the Notification microservice with @RabbitListener
       - Create new package rabbitmq into Notification module and add @RabbitListener to listens for the messages in Queue, after that save the payload from queues into database
       - This is how the tracing looks like once we publish and consume messages from queues
-  !["RabbitMQ Zipkin after request"](./resources/rabbitmq_zipkin_afther_request.png)
+!["RabbitMQ Zipkin after request"](./resources/rabbitmq_zipkin_afther_request.png)
 - Packaging Microservices to Runnable Jar file
   - Maven Compiler Plugin (Will use Apache Maven, and Apache Maven Compiler Plugin, links are above into **Links** section)
     - Into main POM.xml file add maven-compiler-plugin and specify source, and target versions to the current Java version in this case 18. Add <packaging>jar</packaging> to the sum POM.xml 's  to specify the type of the packaging. After that on the right menu choose maven choose microservice -> lifecycle -> clean (to remove old target folder) -> compile (to create new target folder) -> package (to create jar file, into target folder).
@@ -228,3 +235,56 @@ The submodules are regular Maven projects, and they can be built separately or t
       - mvn spring-boot:run | usin spring boot to run the microservice
       - java -jar file_name.jar | using java to run jar files
     - Run all the microservices except amqp, and clients they are not runnable, they are only dependencies to the other microservices 
+- Packaging Jars to Docker Images
+  - What is Docker
+    - Docker is a platform for building, running and shipping applications
+    - Developers can easily build and deploy applications running in **containers**
+    - Local development is the same across any environment. If it works in your local machine it will work in dev, staging, demo, preprod, prod, and any environment.
+    - CI/CD Workflows
+  - Docker Image
+    - Docker Images and Containers: From our local code we are build Docker Images and from Docker Image we are run Docker Container.
+    - Docker Image is a template were we are running our application. From one Docker Image we can run multiple containers. 
+    - Docker Image is a file used to execute code in Docker Container.
+    - Docker Image is a set of instructions to build a Docker Container.
+    - Contains: Application code, libraries, tools and every needed to run you application.
+    - It is a blueprint, where from it, we can run multiple instances of our application.
+  - Docker Container
+    - Is an isolated environment for running an application
+    - The Docker Container contains everything our application needs (OS, tools and binaries, and our source code)
+  - Docker Architecture follows the client/server approach (where the client is that we are seen and the server is the Docker Host)
+    - Client
+      - Example of Docker Request from the Client to the Docker Daemon (docker build, docker run, docker pull)
+    - Server - Docker Host
+      - Docker Daemon (is responsible for the handling the request from the client). For example when the Client make a docker run request to the Docker Daemon if the application is not present on the localhost then Docker Daemon will be fetched from Registers. And when we are fetching application to our local machine, then from this Docker Image we can run multiple Docker Containers from this image.
+    - Registers (there's public and private registers)
+      - For example Docker Hub repository for docker application (Spring, Postgres, NGINX, etc.). Also for example Amazon Elastic Container Registry for AWS ecosystem. Google Container Registry for (GCP Google Cloud Provider). GitHub Packages for GitHub.
+      - Docker Register is a storage and distribution system for docker images. Such as Docker Hub.
+      - Public/Private Docker Registers
+  - Docker Config fies are placed into home directory ~/.docker , where config.json we can configure the auth credentials for the corresponding Docker Register. 
+  - Spring Boot Maven Plugin and Jib
+    - The process is: take our microservices -> put them into a JAR file -> build Docker Image -> from the Docker Image run Docker Containers
+    - JAR: A JAR is a package file format typically used to aggregate may Java class files and associated metadata and resources into one file for distribution. JAR files are archive files that include a Java-specific manifest file. They are build on the Zip format and typically have a .jar file extension. 
+    - There are couple ways to build Docker Images:
+      - By using Maven Plugin (check link above Spring Boot Maven Plugin Documentation). In the link read Packaging OCI Images. The plugin create OCI image from JAR or WAR files using Cloud Native Buildpacks (CNB).
+      - By using Jib Plugin (check link above Jib Containerize Java Applications). Benefits from Jib are: its Fast, Reproducible, Daemonless. No need to write our own Docker files and calling docker build/push.
+    - For configuration in the main pom.xml check dependency jib-maven-plugin and <image> tag into <properties>
+    - The submodules must decide how to use this jib-maven-plugin, and if they want to use it at all (for example for amqp and clients there is no need for them to include this Jib configuration) for the others we want to build Docker Image.
+      - for every single microservice we must provide the <profiles> tag. This is the build profile tag, and after that into maven tab from the intelliJ we can choose this profile and run the package command from the Lifecycle. To build the image.
+      - for example the <execution> tag can be in the main pom.xml as centralized configuration, and also can be in every different microservice.
+!["JIB build profile"](./resources/jib_build_profile.png)
+      - it is important to use **docker login** before each interaction with Docker Registers. 
+        - go to the apigw and write **mvn clean package -P build-docker-image** this command is the exact same thing as we see in the image above (just open profiles choose the correct one and after that open the microservice on which you want to execute this profile) 
+        - I had problem with my mvn configuration, because it was using Java version 11, so needed to change it to Java version 17  
+          - If you write mvn -version, and see the other version then change it by: **export JAVA_HOME=$(/usr/lib64/jvm/java-17-openjdk-17 -v 17)**
+    - To run **build-docker-image** profile for all my microservices I must go to the root directory and write **mvn clean package -P build-docker-image**, it will package and send all my microservices separately to the Docker Hub repository.
+!["JIB build profile success"](./resources/jib_build_profile_success.png)
+  - Adding Eureka Server and ApiGW to Docker Compose 
+    - Open docker-compose.yml and add all of these services from the Docker Hub repository, so that we can just say **docker-compose up -d** and then all of our services will start as a Docker Container
+  - Docker Network
+    - if I open pom.xml on each microservice will see that the addresses are added as **localhost**, which will not work into communication between Docker Containers. This should be replaced by Docker Network
+    - into docker-compose.yml into networks add other networks, also newly created networks in this case it is **spring** should be added for the all microservices into docker-compose.yml after when we specify **ports**
+    - after that go to the application.yml on each microservice and change **localhost** with the container name. This will be done in **spring profiles** section read below
+    - Spring Profiles, check the link above Spring Profiles
+      - I must have different application.yml files for different environments, so duplicate the application.yml file from each microservice and paste it as application-docker.yml where will be the configurations for the Docker Containers
+      - Everything that comes after application- is the profile name.
+      - On the docker-compose.yml add environment: - SPRING_PROFILES_ACTIVE=docker (this is the name after application-docker.yml on each microservice)
