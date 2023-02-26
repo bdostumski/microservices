@@ -1,4 +1,5 @@
-version: '3'
+
+version: "3.8"
 
 services:
   postgres:
@@ -15,23 +16,6 @@ services:
     networks:
       - postgres
     restart: unless-stopped
-
-# If I am going to use a different container for Fraud microservice, it can be done this way
-#  postgres-fraud:
-#    container_name: postgres
-#    image: postgres
-#    environment:
-#      POSTGRES_USER: syscomz
-#      POSTGRES_PASSWORD: password
-#      PGDATA: /data/postgres
-#    volumes:
-#      - postgres:/data/postgres
-#    ports:
-  #      - "5556:5432"
-#    networks:
-#      - postgres
-#    restart: unless-stopped
-
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
@@ -46,48 +30,29 @@ services:
     networks:
       - postgres
     restart: unless-stopped
-
-  # The zipkin process services the UI, and also exposes a POST endpoint that
-  # instrumentation can send trace data to. Scribe is disabled by default.
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
-    # Environment settings are defined here https://github.com/openzipkin/zipkin/blob/master/zipkin-server/README.md#environment-variables
-#      The configuration below is used to store data into mysql database
-#    environment:
-#      - STORAGE_TYPE=mysql
-      # Point the zipkin at the storage backend
-#      - MYSQL_HOST=mysql
-      # Uncomment to enable scribe
-      # - SCRIBE_ENABLED=true
-      # Uncomment to enable self-tracing
-      # - SELF_TRACING_ENABLED=true
-      # Uncomment to enable debug logging
-      # - JAVA_OPTS=-Dlogging.level.zipkin2=DEBUG
     ports:
-      # Port used for the Zipkin UI and HTTP Api
-      - 9411:9411
-      # Uncomment if you set SCRIBE_ENABLED=true
-      # - 9410:9410
-#    depends_on:
-#      - storage
+      - "9411:9411"
     networks:
       - spring
-  # Add RabbitMQ
   rabbitmq:
     image: rabbitmq:3.9.11-management-alpine
     container_name: rabbitmq
     ports:
-      - "5672:5672" # in this port the application will be connected to | here are messages published
-      - "15672:15672" # this port is for management console | open RabbitMQ from this port localhost:15672 | default username and password is: guest
-  # Adding Eureka Server and ApiGW to Docker Compose
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - spring
   eureka-server:
     image: bdostumski/eureka-server:latest
     container_name: eureka-server
+    hostname: eureka-server
     ports:
       - "8761:8761"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker # this is the name after application-docker.yml on each microservice
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - spring
     depends_on:
@@ -98,7 +63,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker # this is the name after application-docker.yml on each microservice
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - spring
     depends_on:
@@ -116,7 +81,6 @@ services:
       - postgres
     depends_on:
       - zipkin
-      - eureka-server
       - postgres
       - rabbitmq
   fraud:
@@ -131,7 +95,6 @@ services:
       - postgres
     depends_on:
       - zipkin
-      - eureka-server
       - postgres
       - rabbitmq
   notification:
@@ -146,9 +109,9 @@ services:
       - postgres
     depends_on:
       - zipkin
-      - eureka-server
       - postgres
       - rabbitmq
+
 networks:
   postgres:
     driver: bridge

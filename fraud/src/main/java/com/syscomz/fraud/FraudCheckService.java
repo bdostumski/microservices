@@ -16,10 +16,10 @@ public class FraudCheckService {
                 FraudCheckHistory.builder()
                         .customerId(customerId)
                         .isFraudster(false)
-                        .createdAd(LocalDateTime.now())
+                        .createdAt(LocalDateTime.now())
                         .build()
         );
-
         return false;
     }
+
 }

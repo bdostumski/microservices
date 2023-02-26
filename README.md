@@ -33,6 +33,7 @@
 - [AdoptOpenJDK provides prebuilt OpenJDK DEPRICATED use Eclipse Temurin](https://hub.docker.com/_/adoptopenjdk) | AdoptOpenJDK provides prebuilt OpenJDK binaries from a fully open source set of build scripts and infrastructure.
 - [Provide JRE (Java Runtime Environment) Images](https://hub.docker.com/_/eclipse-temurin/) | Official Images for OpenJDK binaries built by Eclipse Temurin.
 - [Spring Profiles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles) | Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
+- [Remove Docker Images, Containers, and Volumes](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes) | How To Remove Docker Images, Containers, and Volumes
 
 ## Cheat Sheet
 - mvn spring-boot:run | usin spring boot to run the microservice
@@ -288,3 +289,16 @@ The submodules are regular Maven projects, and they can be built separately or t
       - I must have different application.yml files for different environments, so duplicate the application.yml file from each microservice and paste it as application-docker.yml where will be the configurations for the Docker Containers
       - Everything that comes after application- is the profile name.
       - On the docker-compose.yml add environment: - SPRING_PROFILES_ACTIVE=docker (this is the name after application-docker.yml on each microservice)
+
+  - Steps:
+    - Add new service and application-docker.yaml for customer 
+    - Add new service and application-docker.yaml for fraud 
+    - Add new service and application-docker.yaml for notification 
+    - Note that above services need postgres network since they need database 
+    - Build new images with mvn clean package -P build-docker-image 
+    - Pull new images with docker compose pull 
+    - Run all applications with docker compose up -d 
+    - Check logs for all microsercvices with docker logs service-name 
+    - Test your changes. Fire up a request from postman to apigw listening on post 8083 
+    - Inspect Zipkin and Eureka Dashboard 
+    - Inspect database to make sure data being stored correctly

@@ -20,6 +20,6 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/ # if we want to use docker-compose.yml to start all the microservices at once then we should change the name from localhost to the container_name of the microservice from docker-compose.yml file, so that the docker network can find them, to do not that I can duplicate application.yml file
+      defaultZone: http://localhost:8761/eureka # if we want to use docker-compose.yml to start all the microservices at once then we should change the name from localhost to the container_name of the microservice from docker-compose.yml file, so that the docker network can find them, to do not that I can duplicate application.yml file
     fetch-registry: true # it is true by default
     register-with-eureka: true # it is true by default
