@@ -1,5 +1,6 @@
 server:
   port: 8080
+---
 spring:
   application:
     name: customer
@@ -21,6 +22,7 @@ spring:
     addresses: localhost:5672
   profiles:
     active: default
+---
 eureka:
   client:
     service-url:

@@ -1,5 +1,6 @@
 server:
   port: 8081
+---
 spring:
   application:
     name: fraud
@@ -19,7 +20,7 @@ spring:
     base-url: http://localhost:9411
   profiles:
     active: default
-
+---
 eureka:
   client:
     service-url:

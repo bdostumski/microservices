@@ -1,5 +1,6 @@
 server:
   port: 8080
+---
 spring:
   application:
     name: customer
@@ -19,6 +20,7 @@ spring:
     base-url: http://zipkin:9411
   rabbitmq:
     addresses: rabbitmq:5672
+---
 eureka:
   client:
     service-url:
