@@ -1,5 +1,6 @@
 server:
   port: 8082
+---
 spring:
   application:
     name: notification
@@ -21,6 +22,7 @@ spring:
     addresses: localhost:5672
   profiles:
     active: default
+---
 eureka:
   client:
     service-url:
@@ -28,7 +30,7 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     enabled: true
-
+---
 rabbitmq:
   exchanges:
     internal: internal.exchange

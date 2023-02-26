@@ -1,5 +1,6 @@
 server:
   port: 8082
+---
 spring:
   application:
     name: notification
@@ -19,6 +20,7 @@ spring:
     base-url: http://zipkin:9411
   rabbitmq:
     addresses: rabbitmq:5672
+---
 eureka:
   client:
     service-url:
@@ -26,7 +28,7 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     enabled: false
-
+---
 rabbitmq:
   exchanges:
     internal: internal.exchange
