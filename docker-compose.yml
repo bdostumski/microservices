@@ -45,6 +45,7 @@ services:
   eureka-server:
     image: bdostumski/eureka-server:latest
     container_name: eureka-server
+    hostname: eureka-server
     ports:
       - "8761:8761"
     environment:
@@ -62,8 +63,11 @@ services:
       - "SPRING_PROFILES_ACTIVE=docker"
     networks:
       - spring
+      - postgres
     depends_on:
       - zipkin
+      - postgres
+      - rabbitmq
       - eureka-server
   customer:
     image: bdostumski/customer:latest
