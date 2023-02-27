@@ -27,7 +27,6 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka
     fetch-registry: true
     register-with-eureka: true
-    enabled: false
 ---
 rabbitmq:
   exchanges:
@@ -36,32 +35,3 @@ rabbitmq:
     notification: notification.queue
   routing-keys:
     internal-notification: internal.notification.routing-key
----
-server:
-  port: 8081
----
-spring:
-  application:
-    name: fraud
-  datasource:
-    password: password
-    url: jdbc:postgresql://postgres:5432/fraud
-    username: syscomz
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-    show-sql: true
-  zipkin:
-    base-url: http://zipkin:9411
----
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka
-    fetch-registry: true
-    register-with-eureka: true
-    enabled: false
