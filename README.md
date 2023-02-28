@@ -62,6 +62,15 @@
 - kubectl get pods | show all running pods
 - kubectl port-forward pod/name_of_the_pod 8080:80 | expose the pod to localhost:8080
 - kubectl delete pod pod_name | delete pod
+- kubectl apply -f k8s/minikube/bootstrap/postgres | run all yml files
+- kubectl describe pod pod_name | show pod information
+- kubectl logs pod_name | show logs
+- minikube ssh | login into minikube
+- kubectl exec -it postgres-0 -- psql -U syscomz | login into postgres-0 pod and create sql database
+- minikube service --url service_name | get the url 
+- kubectl get all | show all the resources - pods, services, and stateful-sets
+- kubectl get services | show services 
+- minikube tunel | start services with type LoadBalancer
 
 #### Maven
 - mvn archetype:generate -DgroupId=com.syscomz -DartifactId=syscomzservices -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false | Maven Creating Archetypes
@@ -464,4 +473,8 @@ The submodules are regular Maven projects, and they can be built separately or t
       - Maintains network rules to allow communication to pods from inside and outside the cluster
       - Implements a controller that watches the API server for new Services and Endpoints
       - Creates Local IPVS rules that tell node to intercept traffic destined to the Service ClusterIP (IPVS -> IP Virtual Server)
-      - 
+- Deploying Postgres RabbitMQ and Zipkin to K8s
+  - It is important to know that we should never deploy our databases in our kubernetes cluster. It should come from the outside like RDS (Amazon Relational Database Service) for example.
+!["Deployment Architecture"](./resources/k8s-deployment-architecture.png)
+  - Because the type of the service of Zipkin is LoadBalancer to have access to it, we should write minikube tunnel 
+!["K8S Kubectl Get All"](./resources/k8s-kubectl-get-all.png)
