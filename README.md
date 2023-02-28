@@ -34,6 +34,11 @@
 - [Provide JRE (Java Runtime Environment) Images](https://hub.docker.com/_/eclipse-temurin/) | Official Images for OpenJDK binaries built by Eclipse Temurin.
 - [Spring Profiles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles) | Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
 - [Remove Docker Images, Containers, and Volumes](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes) | How To Remove Docker Images, Containers, and Volumes
+- [Minikube](https://minikube.sigs.k8s.io/docs/) | Minikube website
+- [Runtime options with Memory, CPUs, and GPUs](https://docs.docker.com/config/containers/resource_constraints/) | By default, a container has no resource constraints and can use as much of a given resource as the host’s kernel scheduler allows. Docker provides ways to control how much memory, or CPU a container can use, setting runtime configuration flags of the docker run command. This section provides details on when you should set such limits and the possible implications of setting them.
+- [Kubernetes](https://kubernetes.io/) | Official page for kubernetes
+- [Learn Kubernetes](https://kubernetes.io/docs/tutorials/kubernetes-basics/) | learn kubernetes basics
+- [Install Tools for Kubernetes](https://kubernetes.io/docs/tasks/tools/) | Install Tools
 
 ## Cheat Sheet
 - mvn spring-boot:run | usin spring boot to run the microservice
@@ -48,6 +53,15 @@
 - docker volume ls | show volumes
 - docker logs \[container_name\] | check the logs for the container
 - docker-compose pull | pull the latest images from our Docker Hub repository
+- docker info | show main docker information for total memory, CPUs and more
+- minikube start --help | information about start of minikube cluster
+- minikube start --memory=14g | setup minikube to use 14g memory
+- minikube status | show the status of minikube
+- minikube ip | show the ip address for our master node
+- kubectl run container_name --image=image_name:version --port=80 | the port is that the container is listening on
+- kubectl get pods | show all running pods
+- kubectl port-forward pod/name_of_the_pod 8080:80 | expose the pod to localhost:8080
+- kubectl delete pod pod_name | delete pod
 
 #### Maven
 - mvn archetype:generate -DgroupId=com.syscomz -DartifactId=syscomzservices -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false | Maven Creating Archetypes
@@ -235,7 +249,8 @@ The submodules are regular Maven projects, and they can be built separately or t
     - Run all microservices one by one with spring-boot or java
       - mvn spring-boot:run | usin spring boot to run the microservice
       - java -jar file_name.jar | using java to run jar files
-    - Run all the microservices except amqp, and clients they are not runnable, they are only dependencies to the other microservices 
+!["Run microservices through cli"](./resources/java-jar-run-microservices-cli.png)
+  - Run all the microservices except amqp, and clients they are not runnable, they are only dependencies to the other microservices 
 - Packaging Jars to Docker Images
   - What is Docker
     - Docker is a platform for building, running and shipping applications
@@ -302,3 +317,151 @@ The submodules are regular Maven projects, and they can be built separately or t
     - Test your changes. Fire up a request from postman to apigw listening on post 8083 
     - Inspect Zipkin and Eureka Dashboard 
     - Inspect database to make sure data being stored correctly
+- Kubernetes K8s
+  - What is K8s 
+    - It is Application Orchestrator 
+      - Deploy and manage applications (containers) 
+      - Scale up and down according demand
+      - Zero Downtime Deployments
+      - Rollbacks
+      - And more...
+  - Knowing K8s we must know what is:
+    - Cluster 
+      - Cluster is set of nodes 
+      - Node is - Virtual (VM) or Physical Machine
+      - Cluster is separated by Master Node and Worker Node
+        - Master Node is the brain of the cluster, this is where all the decisions are made
+        - Worker Node is doing the job (as running our applications)
+      - Both Worker and Master Nodes communicate each-other via Qublet
+      - In a cluster we can have more than one worker nodes, for this project we have (4 Nodes in Total -> 1 Master Node, and 3 Worker Nodes)
+    - Master Node and Control Plane (Master Node runs all cluster's Control Plane services. It is the brains where control and decisions are made)
+      - Master Node contains Control Plane. The Control Plane is made of several components: 
+        - API Server
+          - Frontend to K8s Control Plane
+          - All communications go through API server External and Internal
+          - Exposes Restful API on port 443
+          - Authentication and Authorization checks
+          - When I am using kubectl apply -f file_name.yml, this file is actually send from the external world to the API Server and also all the internal services communication goes through the API server
+          - kubectl apply -f file_name.yml -> API Server -> internal_services
+        - Scheduler
+          - Watches for new workloads/pods and assigns them to a node based on several scheduling factors:
+            - Is Node Healthy?
+            - Is the Node have Enough Resources?
+            - Is the Port Available?
+            - Affinity and Anti Affinity rules
+            - And etc.
+        - Cluster Store
+          -  Stores configuration and state of the entire cluster 
+          - K8s uses **etcd** which is distributed key value data store
+          - **etcd** is Single Source of Truth
+          - **etcd** whatch for changes (watch specific keys or directories for changes and react to changes in values)
+          - kubectl apply -f file_name.yml -> API Server -> etcd (contains the configuration for our entire state)
+        - Controller Manager
+          - Daemon that manages the control loop. It is a Controller of the Controllers. In K8s we have a bunch of controllers for example:
+            - Node Controller (when the current state doesn't match the desire state, it reacts to those changes), for example we are setting (desired state = 1 node), and if we have one node and this node dies then the Node Controller is responsible for bringing another node.
+          - Other Controllers:
+            - ReplicaSet Controller (is responsible for ensuring that we have the correct number of pods running)
+            - Endpoint Controller (which assign pods to services)
+            - Namespace Controller
+            - Service Accounts Controller
+            - And others...
+          - What the Controller Manager does it simply watches API Server for changes and the GOAL is to watch for any changes that does not match our desire state
+          - If the Desire State doesn't match the Current State then the appropriate controller kicks in to try to match the desire state, so the Controller is simply watch loop. 
+!["K8s Controller Manager](./resources/k8s-controller-manager.png)
+        - Cloud Manager
+          - Is responsible to interact with underlying cloud provider (AWS, GOOGLE, AZURE)
+          - It does it for:
+            - Load Balancers
+            - Storage
+            - Instances (VMs)
+        - All of these components communicate each-other via API Server
+        - The worker nodes are outside of Master Node's Control Plane
+!["K8s Control Plane"](./resources/k8s-control-plane.png)
+    - Worker Nodes
+      - Worker Node is VM or Physical Machine often running linux
+      - Provides running environment for our applications
+      - Into the node we have PODs which are our applications (we can think of the POD as a docker container into docker world)
+    - Worker Node has 3 main components:
+      - Kublet 
+        - Kublet is Main Agent that runs on every single node
+        - Receives Pod definitions from API server
+        - Interacts with Container Runtime to run containers associated with the Pod
+        - Reports Node and Pods state to the Master Node trough API Service
+!["K8s Kublet"](./resources/k8s-kublet.png)
+      - Container Runtime
+        - Responsible for Running Containers and abstract container management for Kubernetes
+          - In it, we have Container Runtime Interface CRI (it is interfaced for 3rd party container runtime)
+          - Containerd (it is the standard container run time for K8S)
+        - It is responsible to pull images from Docker Repositories for example Docker Hub, start and stop containers
+          - Pull Images
+          - Start Containers
+          - Stop Containers
+      - Kube Proxy
+        - Agent runs on everyone through DaemonSets
+        - It is responsible for:
+          - Local cluster networking
+          - Each node gets own unique IP address
+          - Routing network traffic to load balanced services
+  - Running Kubernetes
+    - Run in ourselves. Which is really hard.
+    - Other variant is by Managed Kubernetes (used by most companies in production). Most popular Managed Kubernetes providers are:
+      - EKS Elastik Kubernetes Service
+        - EKS give us a Cluster and we decide how to manage it. There are two ways AWS Fargate used for serverless containers (Deploy serverless containers), or Amazon EC2 used for wong running applications (Deploy worker nodes for your EKS cluster). These services are really expensive, they are used for production, or testing environments. To run local kubernetes cluster there are tree main methods: minikube, kind, and docker. This tree solutions are mainly used for learning purposes, like local development and CI.  
+      - GKE Google Kubernetes Engine
+      - AKS Azure Kubernetes
+      - And other...
+    - To be managed means to give the Master Node and all the services in it to be managed by 3rd party provider. We should focus only in Worker Nodes this is where our application run.
+  - Minikube
+    - minikube start --memory=14g start minikube with 14g of ram 
+    - When we set up and start minikube, we can use kubectl, to command our minikube cluster
+  - Kubectl (Kubernetes Command Line Tool)
+    - For now, we have minikube with 1 node, and this is the master node, and inside we have Control Plane with all the components that we learned for the Master Node.
+    - This node has IP address, which we can grab it by running minikube ip
+    - Kuectl lets our machine communicate with our minikube cluster
+    - Kubectl commands gains our cluster:
+      - Deploy
+      - Inspect
+      - Edit resources
+      - Debug 
+      - View Logs
+      - etc
+  - Pod (Is a group of one or more containers, represents running process, and share same network and volumes. Never create Pods on its own. Use Controllers Instead for example Deployment. Pods are Ephemeral (no long live) and Disposable)
+    - A pod is the smallest deployable unit in Kubernetes and not containers
+    - The pod can contain:
+      - The smallest unit for kubernetes is a pod, for docker is a container
+      - Main Container, which is our application
+      - May have, or may not have Init Container, or more init containers these are containers that are executed before the Main Container  
+      - May or may not have some Side Containers, these are the containers that are support our Main Container. For example, you may have a container which acts as a proxy to your main container. 
+      - In the pods we can have Volumes, this is how containers share data between them
+      - The way that these containers communicate each-other within a pod is using localhost and then whatever port that they expose
+      - The pod has a unique IP address, which means that if another pod wants to talk with this pod it uses the unique IP address
+!["K8S Pods"](./resources/k8s-pods.png)
+  - Deployments (Never deploy pods using kind:Pod in our yml files)
+    - Manages release of new application
+    - Zero downtime deployments
+    - Create ReplicaSet
+    - It works like (DEPLOYMENT -> it creates REPLICASET (replica-set cares of the number of pods are always running))
+    - If we have V1 of our app if we want to release a new version of our app, k8s will take care of the deployment for us. It will create another replica set for example V2 and when everything is ok on V2, then the traffic to the V1 will be stopped.
+  - Services (k-proxy)
+    - Bad practices
+      - How do we access our app?
+      - Not using port-forward. Only for testing purposes
+      - Never rely on Pod IP addresses
+    - Services have
+      - Sable IP address 
+      - Stable DNS Name
+      - Stable Port
+    - Types of Services
+      - ClusterIP (Default)
+      - NodePort
+      - ExternalName
+      - LoadBalancer
+  - Service Discovery (SVC)
+    - It is a mechanism for applications and microservices to locale each-other on a network
+    - DNS (Domain Name System) map ip address to the name.
+    - KubeProxy
+      - Network Proxy that runs on each node. Implementing part of the Kubernetes Service.
+      - Maintains network rules to allow communication to pods from inside and outside the cluster
+      - Implements a controller that watches the API server for new Services and Endpoints
+      - Creates Local IPVS rules that tell node to intercept traffic destined to the Service ClusterIP (IPVS -> IP Virtual Server)
+      - 
