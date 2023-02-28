@@ -9,6 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
+    <!-- Microservice Modules -->
     <modules>
         <module>customer</module>
         <module>fraud</module>
@@ -35,6 +36,7 @@
         <image>bdostumski/${project.artifactId}:${project.version}</image>
     </properties>
 
+    <!-- All submodules can pick the dependency that they want -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -44,6 +46,8 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+
+            <!-- Spring Cloud Dependency provides tools for developers to quickly build some of the common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus, one-time tokens, global locks, leadership election, distributed sessions, cluster state) -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -54,6 +58,7 @@
         </dependencies>
     </dependencyManagement>
 
+    <!-- All the submodules will have these dependencies by default, without explicitly importing them into their pom.xml file -->
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -63,19 +68,31 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+
+        <!-- OpenFeign dependency -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.8.8</version>
+        </dependency>
     </dependencies>
 
     <build>
+        <!-- Again in this pluginManagement all submodules can pick the dependency that they want -->
         <pluginManagement>
             <plugins>
+                <!-- This plugin build the artifacts -->
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring.boot.maven.plugin.version}</version>
+                    <!-- Because I am not using default parent pom, with spring-boot-starter-parent where the configuration below is pre-configured. -->
+                    <!-- I need to add repackage goal by hand. Without this we won't be able to run the applications -->
                     <executions>
                         <execution>
                             <goals>
@@ -84,45 +101,71 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- Jib to containerize our Java code -->
                 <plugin>
                     <groupId>com.google.cloud.tools</groupId>
                     <artifactId>jib-maven-plugin</artifactId>
                     <version>3.1.4</version>
+                    <!-- default configuration for all our microservices -->
+                    <!-- Check for Java your version in google search for "adoptopenjdk docker" because it is deprecated go Eclipse Temurin  -->
+                    <!-- Because I want to use exact same image.
+                    Or if this image eclipse-temurin:17 is changed internal at some point of a time in the future (I want to use the image that I am use today).
+                    The hash is added by me @sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc to make share that I am using the exact same image -->
                     <configuration>
                         <from>
-                            <image>eclipse-temurin:17@sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc</image>
+                            <image>
+                                eclipse-temurin:17@sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc
+                            </image>
+                            <!-- Configuration for different architectures -->
+                            <!-- The platform configuration will not let me build Docker Images locally, may be it is a bug -->
                             <platforms>
+<!--                                <platform>-->
+<!--                                    <architecture>arm64</architecture>-->
+<!--                                    <os>linux</os>-->
+<!--                                </platform>-->
                                 <platform>
                                     <architecture>amd64</architecture>
                                     <os>linux</os>
                                 </platform>
                             </platforms>
                         </from>
+                        <!-- The image that we want the JIB to build -->
                         <to>
                             <tags>
                                 <tag>latest</tag>
                             </tags>
                         </to>
                     </configuration>
+                    <!-- I want to centralize this <execution> for all my microservice that's why I am move this code into main pom.xml below the <configuration> tag -->
+                    <!-- If this execution is different for the other microservice than every microservice should have its own <execution> tag -->
+                    <!-- For example, you can check the pom.xml configuration in apigw microservice where I am let commented example -->
                     <executions>
                         <execution>
+                            <!-- After the package I want to run the goal below the <phase> -->
                             <phase>package</phase>
                             <goals>
+                                <!-- This will build our image and push it to our Docker Registry -->
                                 <goal>build</goal>
+                                <!-- This will build tart file -->
+                                <!-- <goal>buildTar</goal>-->
+                                <!-- This will build local Docker Image -->
+                                <!-- <goal>dockerBuild</goal>-->
                             </goals>
                         </execution>
                     </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
+        <!-- Add Maven Compiler Plugin -->
+        <!-- This plugin is included into every single module -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>17</source> <!-- Java version -->
+                    <target>17</target> <!-- Java version -->
                 </configuration>
             </plugin>
         </plugins>

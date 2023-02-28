@@ -8,6 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 @SpringBootApplication(
+        // this is done to unlock the ability to inject RabbitMQMessagesProducer
         scanBasePackages = {
                 "com.syscomz.customer",
                 "com.syscomz.amqp",
@@ -15,7 +16,7 @@ import org.springframework.context.annotation.PropertySources;
 )
 @EnableEurekaClient
 @EnableFeignClients(
-        basePackages = "com.syscomz.clients"
+        basePackages = "com.syscomz.clients" // this is needed because client lives in a different package
 )
 @PropertySources({
         @PropertySource("classpath:clients-${spring.profiles.active}.properties")

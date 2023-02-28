@@ -6,23 +6,27 @@ spring:
     name: fraud
   datasource:
     password: password
+    # If this microservice, was using a different database this line must be changed
     url: jdbc:postgresql://postgres:5432/fraud
     username: syscomz
   jpa:
     hibernate:
       ddl-auto: create-drop
+      # ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  # Add Zipkin url. If we are using Spring Profiles we can change base-url into them, according to the environment that we have
   zipkin:
     base-url: http://zipkin:9411
 ---
+# Eureka Client configuration
 eureka:
   client:
     service-url:
       defaultZone: http://eureka-server:8761/eureka
-    fetch-registry: true
-    register-with-eureka: true
+    fetch-registry: true # it is true by default
+    register-with-eureka: true # it is true by default
     enabled: true

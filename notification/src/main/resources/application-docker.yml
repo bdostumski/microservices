@@ -6,33 +6,40 @@ spring:
     name: notification
   datasource:
     password: password
+    # If this microservice, was using a different database this line must be changed
     url: jdbc:postgresql://postgres:5432/notification
     username: syscomz
   jpa:
     hibernate:
       ddl-auto: create-drop
+      # ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  # Add Zipkin url. If we are using Spring Profiles we can change base-url into them, according to the environment that we have
   zipkin:
     base-url: http://zipkin:9411
+  # Specify where RabbitMQ lives
   rabbitmq:
-    addresses: rabbitmq:5672
+    addresses: rabbitmq:5672  # this is not use http protocol is uses its own ampq protocol by default amqp://guest@127.0.0.1:5672/
 ---
+# Eureka Client configuration
 eureka:
   client:
     service-url:
       defaultZone: http://eureka-server:8761/eureka
-    fetch-registry: true
-    register-with-eureka: true
+    fetch-registry: true # it is true by default
+    register-with-eureka: true # it is true by default
     enabled: true
 ---
+# Setup properties to how to connect to our Queue (including the exchange, and the routing-key)
+# These values are used from NotificationConfig class - this is a better way because if we have multiple environments it will be easier to make changes
 rabbitmq:
   exchanges:
-    internal: internal.exchange
+    internal: internal.exchange  # this is Topic Exchanges where receives and sends messages. From the image this is drawing as a circle
   queues:
-    notification: notification.queue
+    notification: notification.queue # this is the Queue it receives the messages from the Exchange and send it to the microservice
   routing-keys:
-    internal-notification: internal.notification.routing-key
+    internal-notification: internal.notification.routing-key # this map the Exchange with Queue using the binding mechanism

@@ -14,6 +14,8 @@ public class NotificationConsumer {
 
     private final NotificationService notificationService;
 
+    // Get data from RabbitMQ -> Queues -> Payload and save it to the database
+    // Listens for the messages in Queue
     @RabbitListener(queues = "${rabbitmq.queues.notification}")
     public void consumer(NotificationRequest notificationRequest) {
         log.info("Consumed {} from queue", notificationRequest);

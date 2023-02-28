@@ -11,25 +11,31 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class NotificationConfig {
 
+    // The value comes from application.yml file more specific rabbitmq.exchanges.internal which is equal to internal.exchanges
     @Value("${rabbitmq.exchanges.internal}")
     private String internalExchange;
 
+    // Same example as above
     @Value("${rabbitmq.queues.notification}")
     private String notificationQueue;
 
+    // Same example as above
     @Value("${rabbitmq.routing-keys.internal-notification}")
     private String internalNotificationRoutingKey;
 
+    // Define the Exchange name
     @Bean
     public TopicExchange internalTopicExchange() {
         return new TopicExchange(this.internalExchange);
     }
 
+    // Define the Queue name
     @Bean
     public Queue notificationQueue() {
         return new Queue(this.notificationQueue);
     }
 
+    // Bind Exchange and Queue together
     @Bean
     public Binding internalToNotificationBinding() {
         return BindingBuilder
@@ -37,7 +43,6 @@ public class NotificationConfig {
                 .to(internalTopicExchange())
                 .with(this.internalNotificationRoutingKey);
     }
-
 
     public String getInternalExchange() {
         return internalExchange;

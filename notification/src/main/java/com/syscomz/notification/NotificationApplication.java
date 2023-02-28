@@ -15,22 +15,21 @@ import org.springframework.context.annotation.PropertySources;
         @PropertySource("classpath:clients-${spring.profiles.active}.properties")
 })
 public class NotificationApplication {
+
     public static void main(String[] args) {
         SpringApplication.run(NotificationApplication.class, args);
     }
 
+    // This is for the testing purposes
 //    @Bean
-//    CommandLineRunner commandLineRunner(
-//            RabbitMQMessageProducer producer,
-//            NotificationConfig notificationConfig
-//            ) {
+//    CommandLineRunner commandLineRunner(RabbitMQMessageProducer producer, NotificationConfig notificationConfig) {
 //        return args -> {
-//            producer.publish(
-//                    new Person("Ali", 18),
+//            producer.publish(new Person("Borislav", 34),
 //                    notificationConfig.getInternalExchange(),
 //                    notificationConfig.getInternalNotificationRoutingKey());
 //        };
 //    }
 //
 //    record Person(String name, int age){}
+
 }
