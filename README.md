@@ -70,7 +70,12 @@
 - minikube service --url service_name | get the url 
 - kubectl get all | show all the resources - pods, services, and stateful-sets
 - kubectl get services | show services 
-- minikube tunel | start services with type LoadBalancer
+- minikube tunnel |  If  we want to access our LoadBalancers we can write minikube tunnel
+- kubectl describe pod pod_name | show pod information
+- kubectl logs pod_name -f | print logs
+- kubectl get svc | show services (svc)
+- kubectl scale --replicas=0 deployment k8s/minikube/services/customer | scale down the customer service from 1 to 0
+- kubectl exec -it postgres-0 -- psql -U syscomz | login into postgres cli
 
 #### Maven
 - mvn archetype:generate -DgroupId=com.syscomz -DartifactId=syscomzservices -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false | Maven Creating Archetypes
@@ -485,4 +490,14 @@ The submodules are regular Maven projects, and they can be built separately or t
     - Into .yml files will see this line of code -> enabled: false # Disable Eureka Server, because we are using Service Discovery from K8s
     - Remove Eureka Server and API Gateway from docker-compose.yml file (for traceability added other versions to the old ones) 
   - For development purposes it is OK to send request directly to the customer API like this localhost:8080/api/v1/customers, we no longer need to pass through Api Gateway as before localhost:8083/api/v1/customers or Load Balancer.
+- Deploying Microservices to k8s
+  - The deployment files are into k8s/minikube/services directory
+  - Services Types:
+    - NodePort (can only be access by internal pods)
+    - LoadBalancer (can be access by external world)
+  - If  we want to access our LoadBalancers we can write minikube tunnel
+  - kubectl apply -f service_name, first start bootstrap directory after that services
+  - minikube tunnel 
+  - kubectl get svc 
+  - use external ip address
 
