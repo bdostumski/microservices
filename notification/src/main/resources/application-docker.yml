@@ -32,7 +32,8 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka
     fetch-registry: true # it is true by default
     register-with-eureka: true # it is true by default
-    enabled: true
+    enabled: false # Disable Eureka Server, because we are using Service Discovery from K8s
+#    enabled: true
 ---
 # Setup properties to how to connect to our Queue (including the exchange, and the routing-key)
 # These values are used from NotificationConfig class - this is a better way because if we have multiple environments it will be easier to make changes

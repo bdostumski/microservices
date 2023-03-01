@@ -478,3 +478,11 @@ The submodules are regular Maven projects, and they can be built separately or t
 !["Deployment Architecture"](./resources/k8s-deployment-architecture.png)
   - Because the type of the service of Zipkin is LoadBalancer to have access to it, we should write minikube tunnel 
 !["K8S Kubectl Get All"](./resources/k8s-kubectl-get-all.png)
+- Refactoring Microservices for k8s
+  - k8s offers a service type called LoadBalancer and this will provision a load balancer according to your cloud environment. I.e AWS, GCP or Azure.
+  - It best to use managed load balancer instead of managing and configure ours.
+  - Disabling Eureka (we no more need from Eureka Server for Service Discovery, because K8s offer that for us)
+    - Into .yml files will see this line of code -> enabled: false # Disable Eureka Server, because we are using Service Discovery from K8s
+    - Remove Eureka Server and API Gateway from docker-compose.yml file (for traceability added other versions to the old ones) 
+  - For development purposes it is OK to send request directly to the customer API like this localhost:8080/api/v1/customers, we no longer need to pass through Api Gateway as before localhost:8083/api/v1/customers or Load Balancer.
+

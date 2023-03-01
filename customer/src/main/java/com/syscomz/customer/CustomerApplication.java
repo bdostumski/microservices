@@ -19,7 +19,7 @@ import org.springframework.context.annotation.PropertySources;
         basePackages = "com.syscomz.clients" // this is needed because client lives in a different package
 )
 @PropertySources({
-        @PropertySource("classpath:clients-${spring.profiles.active}.properties")
+        @PropertySource("classpath:clients-${spring.profiles.active}.properties") // this is clients-default.properties, clients-docker.properties, and clients-kube.properties. where the spring.profiles.active give the specific name for the environment
 })
 public class CustomerApplication {
     public static void main(String[] args) {
