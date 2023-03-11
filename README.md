@@ -817,6 +817,12 @@ select * from tableName;
 !["Zipkin Result"](./resources/k8s-deployment-zipkin.png)
 - Destroy Resources
   - kubectl delete -f service_name | delete resources
-    
-
+- Security - API Key Authentication
+!["Security"](./resources/spring-security.png)
+  - On the picture above first we have Internet where is the CLIENT with its own KEY
+    - The KEY is used only for AUTHORIZATION
+!["Api key db schema"](./resources/spring-security-api-key-db-schema.png)
+  - Then we have the cloud (DMZ - Demilitarised Zone) in it, we have APIGW (API Gate Way), and Filter
+  - And after that we have the Private Network with our microservices
+!["Security filter check"](./resources/spring-security-filter-check.png)
 
