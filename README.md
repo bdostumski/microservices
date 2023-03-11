@@ -825,4 +825,20 @@ select * from tableName;
   - Then we have the cloud (DMZ - Demilitarised Zone) in it, we have APIGW (API Gate Way), and Filter
   - And after that we have the Private Network with our microservices
 !["Security filter check"](./resources/spring-security-filter-check.png)
-
+- Outro
+  - Don't use Spring Cloud Config Server (This is Environment Configuration)
+    - [Spring Clould Config](https://spring.io/projects/spring-cloud-config) | this config server serves all the configurations through HTTP. It is running on the webserver and serving all the configuration for the microservices. The problem is if this service is down then this environment configuration will not be accessible anymore. It is a better way to use kubernetes for example Config Maps.
+    - [Config Map](https://kubernetes.io/docs/concepts/configuration/configmap/) | this is API object used to store non-confidential data in key-value pairs. Pods can consume ConfigMaps as an environment variables, command-line arguments, or as configuration file in a volume. It is not managed from us.
+    - [Kubernetes Property Source](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#kubernetes-propertysource-implementations) | Kubernetes PropertySource implementations this is the most common approach to configure our SpringBoot application
+  - Vault and Secret Management
+    - [Vault](https://www.vaultproject.io/) | Manage Secrets & Protect Sensitive Data
+    - [Spring Vault](https://spring.io/projects/spring-vault) | Spring Vault
+  - Reporting Service
+    - Reporting Microservice -> for example we have three microservices, and we are using SpringData JPA. It doesn't work well if we have long queries. Instead of this we can create another microservice called reporting and then all of these three microservices that we have pushed all the data into it. At that point we can use Spring JDBC and we can write raw SQL queries and have DTO and more. In this case the queries will be executed into this microservice. Another variant is to use Kafka Connect, where Kafka get the query from the database and put it into Kafka Topic, and then we can consume it from the Kafka.
+  - Deployment
+    - [Amazon Elastic Container Registry](https://aws.amazon.com/ecr/) | Easily store, share, and deploy your container software anywhere
+    - [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/) | Distribute network traffic to improve application scalability
+    - [Amazon RDS](https://aws.amazon.com/rds/) | Set up, operate, and scale a relational database in the cloud with just a few clicks.
+    - [Amazon MQ](https://aws.amazon.com/amazon-mq/?amazon-mq.sort-by=item.additionalFields.postDateTime&amazon-mq.sort-order=desc) | Fully managed service for open-source message brokers RabbitMQ
+    - [Amazon Managed Streaming for Apache Kafka (MSK)](https://aws.amazon.com/msk/) | Securely stream data with a fully managed, highly available Apache Kafka service
+    - [Amazon Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/) | The most trusted way to start, run, and scale Kubernetes
